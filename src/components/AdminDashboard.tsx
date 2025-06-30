@@ -22,6 +22,7 @@ import TimeOffRequests from './admin/TimeOffRequests';
 import ClientDetails from './admin/ClientDetails';
 import LoyaltySettings from './admin/LoyaltySettings';
 import ReviewManagement from './admin/ReviewManagement';
+import ServiceManagement from './admin/ServiceManagement';
 
 const drawerWidth = 240;
 
@@ -80,6 +81,9 @@ const AdminDashboard = () => {
           <ListItem button component={Link} to="/admin/reviews">
             <ListItemText primary="Reviews" />
           </ListItem>
+          <ListItem button component={Link} to="/admin/services">
+            <ListItemText primary="Services" />
+          </ListItem>
         </List>
       </Drawer>
       <Box
@@ -98,6 +102,7 @@ const AdminDashboard = () => {
           <Route path="users/:id" element={<ClientDetails />} />
           <Route path="settings/loyalty" element={<LoyaltySettings />} />
           <Route path="reviews" element={<ReviewManagement />} />
+          <Route path="services" element={<ServiceManagement />} />
         </Routes>
       </Box>
     </Box>

@@ -34,78 +34,87 @@ const style = {
 };
 
 const Calendar = () => {
-  const [loyaltyPoints, setLoyaltyPoints] = useState(0);
-  const [pointsToRedeem, setPointsToRedeem] = useState(0);
-  const [discount, setDiscount] = useState(0);
-
-  useEffect(() => {
-    const fetchBookings = async () => {
-      try {
-        const res = await axios.get('http://localhost:5000/api/bookings');
-        const formattedEvents = res.data.map((booking: any) => ({
-          title: booking.status === 'confirmed' ? 'Booked' : 'Pending',
-          start: `${booking.date.split('T')[0]}T${booking.startTime}`,
-          end: `${booking.date.split('T')[0]}T${booking.endTime}`,
-          allDay: false,
-          backgroundColor: booking.status === 'confirmed' ? '#3788d8' : '#f0ad4e',
-        }));
-        setEvents(formattedEvents);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchBookings();
-
-    const fetchLoyaltyPoints = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const res = await axios.get('http://localhost:5000/api/loyalty', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setLoyaltyPoints(res.data.points);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchLoyaltyPoints();
-
-    socket.on('bookingUpdate', (updatedBooking) => {
-      setEvents((prevEvents) =>
-        prevEvents.map((event: any) =>
-          event.id === updatedBooking._id
-            ? {
-                ...event,
-                title: updatedBooking.status === 'confirmed' ? 'Booked' : 'Pending',
-                backgroundColor: updatedBooking.status === 'confirmed' ? '#3788d8' : '#f0ad4e',
-              }
-            : event
-        )
-      );
-    });
-
-    return () => {
-      socket.off('bookingUpdate');
-    };
-  }, []);
+  import {
+  // ...
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from '@mui/material';
 
 // ...
 
-  const handleRedeemPoints = async () => {
+const Calendar = () => {
+  const [services, setServices] = useState([]);
+  const [selectedService, setSelectedService] = useState<any>(null);
+  // ... (other state)
+
+  useEffect(() => {
+    // ...
+    const fetchServices = async () => {
+      try {
+        const res = await axios.get('http://localhost:5000/api/services/active');
+        setServices(res.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchServices();
+  }, []);
+
+  const handleBooking = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const res = await axios.post('http://localhost:5000/api/loyalty/redeem', { points: pointsToRedeem }, {
-        headers: { Authorization: `Bearer ${token}` },
+      const bookingRes = await axios.post('http://localhost:5000/api/bookings', {
+        serviceId: selectedService._id,
+        date: selectedDate,
+        startTime: formData.startTime,
+        user: 'mock-user-id', // Replace with actual user ID
       });
-      setDiscount(res.data.discount);
+      setBookingId(bookingRes.data._id);
+
+      const finalPrice = selectedService.price - discount;
+      const paymentRes = await axios.post(
+        'http://localhost:5000/api/payments/create-payment-intent',
+        { 
+          amount: finalPrice * 100, // Amount in cents
+          bookingId: bookingRes.data._id 
+        }
+      );
+      setClientSecret(paymentRes.data.clientSecret);
     } catch (err) {
       console.error(err);
     }
   };
 
-// ...
+  // ...
 
+  return (
+    // ...
+      <Modal
+        // ...
+      >
+        <Box sx={style}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            Book a Session on {selectedDate}
+          </Typography>
           {!clientSecret ? (
             <>
+              <FormControl fullWidth margin="normal">
+                <InputLabel>Service</InputLabel>
+                <Select
+                  value={selectedService?._id || ''}
+                  onChange={(e) => {
+                    const service = services.find((s: any) => s._id === e.target.value);
+                    setSelectedService(service);
+                  }}
+                >
+                  {services.map((service: any) => (
+                    <MenuItem key={service._id} value={service._id}>
+                      {service.name} (${service.price.toFixed(2)}) - {service.duration} min
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
               <TextField
                 margin="normal"
                 required
@@ -117,33 +126,29 @@ const Calendar = () => {
                 InputLabelProps={{ shrink: true }}
                 onChange={onChange}
               />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="endTime"
-                label="End Time"
-                name="endTime"
-                type="time"
-                InputLabelProps={{ shrink: true }}
-                onChange={onChange}
-              />
-              <Typography>You have {loyaltyPoints} points.</Typography>
-              <TextField
-                label="Points to Redeem"
-                type="number"
-                value={pointsToRedeem}
-                onChange={(e) => setPointsToRedeem(parseInt(e.target.value, 10))}
-                fullWidth
-                margin="normal"
-              />
-              <Button onClick={handleRedeemPoints}>Redeem</Button>
-              <Typography>Discount: ${discount.toFixed(2)}</Typography>
-              <Typography>Final Price: ${(formData.fee - discount).toFixed(2)}</Typography>
+              
+              {selectedService && (
+                <>
+                  <Typography>You have {loyaltyPoints} points.</Typography>
+                  <TextField
+                    label="Points to Redeem"
+                    type="number"
+                    value={pointsToRedeem}
+                    onChange={(e) => setPointsToRedeem(parseInt(e.target.value, 10))}
+                    fullWidth
+                    margin="normal"
+                  />
+                  <Button onClick={handleRedeemPoints}>Redeem</Button>
+                  <Typography>Discount: ${discount.toFixed(2)}</Typography>
+                  <Typography>Final Price: ${(selectedService.price - discount).toFixed(2)}</Typography>
+                </>
+              )}
+
               <Button
                 onClick={handleBooking}
                 variant="contained"
                 sx={{ mt: 2 }}
+                disabled={!selectedService}
               >
                 Proceed to Payment
               </Button>
@@ -159,4 +164,3 @@ const Calendar = () => {
   );
 };
 
-export default Calendar;
