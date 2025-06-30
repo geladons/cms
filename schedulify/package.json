@@ -1,0 +1,19 @@
+{
+  "name": "schedulify",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "concurrently \"npm run dev --prefix packages/server\" \"npm start --prefix packages/client\"",
+    "start": "npm start --prefix packages/server",
+    "build": "npm run build --prefix packages/client && npm run build --prefix packages/server"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "concurrently": "^9.2.0"
+  }
+}
