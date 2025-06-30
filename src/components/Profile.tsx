@@ -91,6 +91,17 @@ const Profile = () => {
             value={formData.address}
             onChange={onChange}
           />
+          <TextField
+            margin="normal"
+            fullWidth
+            id="bio"
+            label="Bio"
+            name="bio"
+            multiline
+            rows={4}
+            value={formData.bio}
+            onChange={onChange}
+          />
           <Button
             type="submit"
             fullWidth

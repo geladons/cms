@@ -23,6 +23,9 @@ import ClientDetails from './admin/ClientDetails';
 import LoyaltySettings from './admin/LoyaltySettings';
 import ReviewManagement from './admin/ReviewManagement';
 import ServiceManagement from './admin/ServiceManagement';
+import CouponManagement from './admin/CouponManagement';
+import BlogManagement from './admin/BlogManagement';
+import BlogEditor from './admin/BlogEditor';
 
 const drawerWidth = 240;
 
@@ -84,6 +87,12 @@ const AdminDashboard = () => {
           <ListItem button component={Link} to="/admin/services">
             <ListItemText primary="Services" />
           </ListItem>
+          <ListItem button component={Link} to="/admin/coupons">
+            <ListItemText primary="Coupons" />
+          </ListItem>
+          <ListItem button component={Link} to="/admin/blog">
+            <ListItemText primary="Blog" />
+          </ListItem>
         </List>
       </Drawer>
       <Box
@@ -103,6 +112,10 @@ const AdminDashboard = () => {
           <Route path="settings/loyalty" element={<LoyaltySettings />} />
           <Route path="reviews" element={<ReviewManagement />} />
           <Route path="services" element={<ServiceManagement />} />
+          <Route path="coupons" element={<CouponManagement />} />
+          <Route path="blog" element={<BlogManagement />} />
+          <Route path="blog/new" element={<BlogEditor />} />
+          <Route path="blog/:id" element={<BlogEditor />} />
         </Routes>
       </Box>
     </Box>

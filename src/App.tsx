@@ -1,8 +1,9 @@
 
-import React, { useContext } from 'react';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
-import { AppBar, Toolbar, Button, Container, IconButton } from '@mui/material';
-import { Brightness4, Brightness7 } from '@mui/icons-material';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { ThemeProvider } from './contexts/ThemeContext';
+import MainLayout from './components/MainLayout';
+import LandingPage from './components/LandingPage';
 import Register from './components/Register';
 import Login from './components/Login';
 import Calendar from './components/Calendar';
@@ -13,44 +14,31 @@ import Dashboard from './components/Dashboard';
 import ClientDashboard from './components/ClientDashboard';
 import PrivateRoute from './components/PrivateRoute';
 import EmployeeDashboard from './components/EmployeeDashboard';
+import Team from './components/Team';
+import EmployeeProfile from './components/EmployeeProfile';
 import MapView from './components/MapView';
-import { ThemeProvider, ThemeContext } from './contexts/ThemeContext';
 
-function AppContent() {
-  const { theme, toggleTheme } = useContext(ThemeContext);
-
+function App() {
   return (
-    <Router>
-      <div>
-        <AppBar position="static">
-          <Toolbar>
-            <Button color="inherit" component={Link} to="/login">
-              Login
-            </Button>
-            <Button color="inherit" component={Link} to="/register">
-              Register
-            </Button>
-            <Button color="inherit" component={Link} to="/calendar">
-              Calendar
-            </Button>
-            <Button color="inherit" component={Link} to="/dashboard">
-              My Dashboard
-            </Button>
-            <Button color="inherit" component={Link} to="/admin">
-              Admin
-            </Button>
-            <Button color="inherit" component={Link} to="/map">
-              Map
-            </Button>
-            <IconButton sx={{ ml: 1 }} onClick={toggleTheme} color="inherit">
-// ...
-              }
-            />
-            <Route path="/map" element={<MapView />} />
-          </Routes>
+    <ThemeProvider>
+      <Router>
+        <Routes>
+          <Route element={<MainLayout />}>
+            <Route path="/" element={<LandingPage />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/calendar" element={<Calendar />} />
+            <Route path="/booking" element={<Calendar />} />
+            <Route path="/team" element={<Team />} />
+            <Route path="/team/:id" element={<EmployeeProfile />} />
+            import Blog from './components/Blog';
+import BlogPost from './components/BlogPost';
+
+// ... (inside MainLayout in a different file)
+
+// ... (in App.tsx)
+            <Route path="/map" element={<MapView />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
             <Route
               path="/dashboard"
@@ -63,25 +51,17 @@ function AppContent() {
               <Route path="client" element={<ClientDashboard />} />
               <Route path="employee" element={<EmployeeDashboard />} />
             </Route>
-            <Route
-              path="/admin/*"
-              element={
-                <AdminRoute>
-                  <AdminDashboard />
-                </AdminRoute>
-              }
-            />
-          </Routes>
-        </Container>
-      </div>
-    </Router>
-  );
-}
-
-function App() {
-  return (
-    <ThemeProvider>
-      <AppContent />
+          </Route>
+          <Route
+            path="/admin/*"
+            element={
+              <AdminRoute>
+                <AdminDashboard />
+              </AdminRoute>
+            }
+          />
+        </Routes>
+      </Router>
     </ThemeProvider>
   );
 }

@@ -127,6 +127,53 @@ const Calendar = () => {
                 onChange={onChange}
               />
               
+              const [couponCode, setCouponCode] = useState('');
+  const [couponDiscount, setCouponDiscount] = useState(0);
+
+// ...
+
+  const handleApplyCoupon = async () => {
+    try {
+      const res = await axios.post('http://localhost:5000/api/coupons/validate', { code: couponCode });
+      const { discountType, value } = res.data;
+      if (discountType === 'percentage') {
+        setCouponDiscount(selectedService.price * (value / 100));
+      } else {
+        setCouponDiscount(value);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Invalid or expired coupon');
+    }
+  };
+
+  const handleBooking = async () => {
+    try {
+      const bookingRes = await axios.post('http://localhost:5000/api/bookings', {
+        serviceId: selectedService._id,
+        date: selectedDate,
+        startTime: formData.startTime,
+        user: 'mock-user-id', // Replace with actual user ID
+      });
+      setBookingId(bookingRes.data._id);
+
+      const finalPrice = selectedService.price - discount - couponDiscount;
+      const paymentRes = await axios.post(
+        'http://localhost:5000/api/payments/create-payment-intent',
+        { 
+          amount: finalPrice * 100, // Amount in cents
+          bookingId: bookingRes.data._id,
+          couponCode,
+        }
+      );
+      setClientSecret(paymentRes.data.clientSecret);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+// ...
+
               {selectedService && (
                 <>
                   <Typography>You have {loyaltyPoints} points.</Typography>
@@ -140,9 +187,23 @@ const Calendar = () => {
                   />
                   <Button onClick={handleRedeemPoints}>Redeem</Button>
                   <Typography>Discount: ${discount.toFixed(2)}</Typography>
-                  <Typography>Final Price: ${(selectedService.price - discount).toFixed(2)}</Typography>
+                  
+                  <TextField
+                    label="Coupon Code"
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value)}
+                    fullWidth
+                    margin="normal"
+                  />
+                  <Button onClick={handleApplyCoupon}>Apply Coupon</Button>
+                  <Typography>Coupon Discount: ${couponDiscount.toFixed(2)}</Typography>
+
+                  <Typography variant="h6" sx={{ mt: 2 }}>
+                    Final Price: ${(selectedService.price - discount - couponDiscount).toFixed(2)}
+                  </Typography>
                 </>
               )}
+// ...
 
               <Button
                 onClick={handleBooking}
