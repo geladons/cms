@@ -69,6 +69,20 @@ export const updateBookingStatus = async (req: Request, res: Response) => {
   }
 };
 
+export const getBookingsWithLocation = async (req: Request, res: Response) => {
+  try {
+    const bookings = await Booking.find({ status: 'confirmed' }).populate({
+      path: 'user',
+      select: 'name location',
+      match: { location: { $exists: true } },
+    });
+    const bookingsWithLocation = bookings.filter(booking => booking.user); // Filter out bookings with no user
+    res.status(200).json(bookingsWithLocation);
+  } catch (error) {
+    res.status(500).json({ message: 'Something went wrong' });
+  }
+};
+
 // ... (rest of the controller)
 
 export const getMyBookings = async (req: any, res: Response) => {

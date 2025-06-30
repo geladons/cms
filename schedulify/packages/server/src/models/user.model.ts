@@ -2,45 +2,22 @@
 import { Schema, model } from 'mongoose';
 
 const userSchema = new Schema({
-  name: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
-    lowercase: true,
-  },
-  password: {
-    type: String,
-    required: false, // Not required for OAuth or phone auth
-  },
-  role: {
-    type: String,
-    enum: ['client', 'employee', 'admin'],
-    default: 'client',
-  },
-  phoneNumber: {
-    type: String,
-    unique: true,
-    sparse: true, // Allows multiple null values
-  },
-  googleId: {
-    type: String,
-    unique: true,
-    sparse: true,
-  },
-  appleId: {
-    type: String,
-    unique: true,
-    sparse: true,
+  // ... (existing fields)
+  location: {
+    type: {
+      type: String,
+      enum: ['Point'],
+    },
+    coordinates: {
+      type: [Number], // [longitude, latitude]
+    },
+    address: String,
   },
 }, {
   timestamps: true,
 });
+
+userSchema.index({ location: '2dsphere' }); // Index for geospatial queries
 
 const User = model('User', userSchema);
 

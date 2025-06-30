@@ -9,38 +9,19 @@ export interface IBooking extends Document {
   endTime: string;
   fee: number;
   status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
+  paid: boolean;
 }
 
-const bookingSchema = new Schema({
-  user: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
-  },
-  employee: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-  },
-  date: {
-    type: Date,
-    required: true,
-  },
-  startTime: {
-    type: String,
-    required: true,
-  },
-  endTime: {
-    type: String,
-    required: true,
-  },
-  fee: {
-    type: Number,
-    required: true,
-  },
+// ...
+
   status: {
     type: String,
     enum: ['pending', 'confirmed', 'cancelled', 'completed'],
     default: 'pending',
+  },
+  paid: {
+    type: Boolean,
+    default: false,
   },
 }, {
   timestamps: true,

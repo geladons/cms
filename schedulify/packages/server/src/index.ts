@@ -1,20 +1,13 @@
 
-import http from 'http';
-import { Server } from 'socket.io';
-import express from 'express';
-import mongoose from 'mongoose';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import passport from 'passport';
-import authRoutes from './routes/auth.routes';
-import bookingRoutes from './routes/booking.routes';
-import userRoutes from './routes/user.routes';
-import settingsRoutes from './routes/settings.routes';
-import smsRoutes from './routes/sms.routes';
-import paymentRoutes from './routes/payment.routes';
-import { loadPlugins } from './plugins/loader';
-import './models/settings.model'; // Import to initialize settings
-import './config/passport';
+import profileRoutes from './routes/profile.routes';
+
+import reportsRoutes from './routes/reports.routes';
+
+// ... (other imports)
+
+app.use('/api/reports', reportsRoutes);
+
+// ... (rest of the file)
 
 dotenv.config();
 
