@@ -17,6 +17,7 @@ import BookingList from './admin/BookingList';
 import AuthSettings from './admin/AuthSettings';
 import ThemeSettings from './admin/ThemeSettings';
 import NotificationSettings from './admin/NotificationSettings';
+import Reports from './admin/Reports';
 
 const drawerWidth = 240;
 
@@ -63,6 +64,9 @@ const AdminDashboard = () => {
           <ListItem button component={Link} to="/admin/settings/notifications">
             <ListItemText primary="Notification Settings" />
           </ListItem>
+          <ListItem button component={Link} to="/admin/reports">
+            <ListItemText primary="Reports" />
+          </ListItem>
         </List>
       </Drawer>
       <Box
@@ -76,6 +80,7 @@ const AdminDashboard = () => {
           <Route path="settings/auth" element={<AuthSettings />} />
           <Route path="settings/theme" element={<ThemeSettings />} />
           <Route path="settings/notifications" element={<NotificationSettings />} />
+          <Route path="reports" element={<Reports />} />
         </Routes>
       </Box>
     </Box>

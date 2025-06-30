@@ -109,7 +109,10 @@ const Calendar = () => {
       // 2. Create payment intent
       const paymentRes = await axios.post(
         'http://localhost:5000/api/payments/create-payment-intent',
-        { amount: formData.fee * 100 } // Amount in cents
+        { 
+          amount: formData.fee * 100, // Amount in cents
+          bookingId: bookingRes.data._id 
+        }
       );
       setClientSecret(paymentRes.data.clientSecret);
     } catch (err) {
@@ -120,8 +123,8 @@ const Calendar = () => {
   const onSuccessfulCheckout = async () => {
     try {
       // 3. Update booking status to confirmed
-      await axios.put(`http://localhost:5000/api/bookings/${bookingId}/status`, {
-        status: 'confirmed',
+      await axios.post(`http://localhost:5000/api/payments/confirm-payment`, {
+        bookingId,
       });
       socket.emit('bookingUpdate', { _id: bookingId, status: 'confirmed' });
       handleClose();

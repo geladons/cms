@@ -13,6 +13,7 @@ import Dashboard from './components/Dashboard';
 import ClientDashboard from './components/ClientDashboard';
 import PrivateRoute from './components/PrivateRoute';
 import EmployeeDashboard from './components/EmployeeDashboard';
+import MapView from './components/MapView';
 import { ThemeProvider, ThemeContext } from './contexts/ThemeContext';
 
 function AppContent() {
@@ -38,13 +39,15 @@ function AppContent() {
             <Button color="inherit" component={Link} to="/admin">
               Admin
             </Button>
+            <Button color="inherit" component={Link} to="/map">
+              Map
+            </Button>
             <IconButton sx={{ ml: 1 }} onClick={toggleTheme} color="inherit">
-              {theme === 'dark' ? <Brightness7 /> : <Brightness4 />}
-            </IconButton>
-          </Toolbar>
-        </AppBar>
-        <Container>
-          <Routes>
+// ...
+              }
+            />
+            <Route path="/map" element={<MapView />} />
+          </Routes>
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/calendar" element={<Calendar />} />
