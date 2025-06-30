@@ -13,25 +13,43 @@ export const getBookings = async (req: Request, res: Response) => {
   }
 };
 
+import Service from '../models/service.model';
+
+// ... (inside createBooking)
 export const createBooking = async (req: any, res: Response) => {
   try {
-    const { date, startTime, endTime, fee, employeeId } = req.body;
+    const { date, startTime, serviceId, employeeId } = req.body;
+    
+    const service = await Service.findById(serviceId);
+    if (!service) {
+      return res.status(404).json({ message: 'Service not found' });
+    }
+
+    const bookingDate = new Date(date);
+    const [startHours, startMinutes] = startTime.split(':').map(Number);
+    bookingDate.setHours(startHours, startMinutes);
+
+    const endTime = new Date(bookingDate.getTime() + service.duration * 60000);
+    const endTimeString = `${endTime.getHours().toString().padStart(2, '0')}:${endTime.getMinutes().toString().padStart(2, '0')}`;
+
+    const bookingData = {
+      date,
+      startTime,
+      endTime: endTimeString,
+      fee: service.price,
+      service: serviceId,
+      employee: employeeId,
+      user: req.user._id,
+    };
 
     if (employeeId) {
-      const isAvailable = await availabilityService.isEmployeeAvailable(employeeId, { date, startTime, endTime } as IBooking);
+      const isAvailable = await availabilityService.isEmployeeAvailable(employeeId, bookingData as IBooking);
       if (!isAvailable) {
         return res.status(400).json({ message: 'Employee is not available at this time' });
       }
     }
 
-    const newBooking = new Booking({
-      user: req.user._id,
-      date,
-      startTime,
-      endTime,
-      fee,
-      employee: employeeId,
-    });
+    const newBooking = new Booking(bookingData);
     await newBooking.save();
     res.status(201).json(newBooking);
   } catch (error) {
