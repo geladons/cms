@@ -1,10 +1,43 @@
-
 version: '3.8'
 services:
-  mongo:
-    image: mongo
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
     ports:
-      - '27017:27017'
+      - '80:80'
+    depends_on:
+      - server
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/schedulify
+      - JWT_SECRET=${JWT_SECRET}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - APPLE_CLIENT_ID=${APPLE_CLIENT_ID}
+      - APPLE_TEAM_ID=${APPLE_TEAM_ID}
+      - APPLE_KEY_ID=${APPLE_KEY_ID}
+      - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID}
+      - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN}
+      - TWILIO_PHONE_NUMBER=${TWILIO_PHONE_NUMBER}
+      - STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_SECURE=${SMTP_SECURE}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASS=${SMTP_PASS}
+      - EMAIL_FROM=${EMAIL_FROM}
+      - NOMINATIM_URL=${NOMINATIM_URL}
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:latest
     volumes:
       - mongo-data:/data/db
 
