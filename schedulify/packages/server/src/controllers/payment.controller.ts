@@ -2,19 +2,33 @@
 import { Request, Response } from 'express';
 import Stripe from 'stripe';
 import Booking from '../models/booking.model';
+import Coupon from '../models/coupon.model';
+import { loyaltyService } from '../plugins/loyalty';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2022-11-15',
 });
 
 export const createPaymentIntent = async (req: Request, res: Response) => {
-  const { amount, bookingId } = req.body;
+  const { amount, bookingId, couponCode } = req.body;
+  let finalAmount = amount;
+
+  if (couponCode) {
+    const coupon = await Coupon.findOne({ code: couponCode });
+    if (coupon) {
+      if (coupon.discountType === 'percentage') {
+        finalAmount = amount * (1 - coupon.value / 100);
+      } else {
+        finalAmount = amount - coupon.value * 100; // Convert dollars to cents
+      }
+    }
+  }
 
   try {
     const paymentIntent = await stripe.paymentIntents.create({
-      amount,
+      amount: Math.round(finalAmount),
       currency: 'usd',
-      metadata: { bookingId },
+      metadata: { bookingId, couponCode },
     });
 
     res.send({
@@ -25,17 +39,15 @@ export const createPaymentIntent = async (req: Request, res: Response) => {
   }
 };
 
-// It's better to use webhooks for reliable payment confirmation,
-// but for simplicity, we'll create a dedicated endpoint.
-import { loyaltyService } from '../plugins/loyalty';
-
-// ... (inside confirmPayment)
 export const confirmPayment = async (req: Request, res: Response) => {
-  const { bookingId } = req.body;
+  const { bookingId, couponCode } = req.body;
   try {
     const booking = await Booking.findByIdAndUpdate(bookingId, { paid: true, status: 'confirmed' });
     if (booking) {
       await loyaltyService.awardPoints(booking);
+    }
+    if (couponCode) {
+      await Coupon.findOneAndUpdate({ code: couponCode }, { $inc: { timesUsed: 1 } });
     }
     res.status(200).json({ message: 'Payment confirmed' });
   } catch (error) {

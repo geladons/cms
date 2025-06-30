@@ -26,6 +26,7 @@ const userSchema = new Schema({
     admin: { type: Schema.Types.ObjectId, ref: 'User' },
   }],
   loyaltyPoints: { type: Number, default: 0 },
+  bio: { type: String, trim: true },
 }, {
   timestamps: true,
 });

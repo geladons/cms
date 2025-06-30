@@ -1,9 +1,11 @@
 
-import servicesRoutes from './routes/services.routes';
+import publicRoutes from './routes/public.routes';
+
+import blogRoutes from './routes/blog.routes';
 
 // ... (other imports)
 
-app.use('/api/services', servicesRoutes);
+app.use('/api/blog', blogRoutes);
 
 // ... (rest of the file)
 
@@ -43,6 +45,8 @@ app.use('/api/availability', availabilityRoutes);
 app.use('/api/crm', crmRoutes);
 app.use('/api/loyalty', loyaltyRoutes);
 app.use('/api/reviews', reviewsRoutes);
+app.use('/api/services', servicesRoutes);
+app.use('/api/coupons', couponsRoutes);
 
 loadPlugins(app);
 
