@@ -1,13 +1,26 @@
 
+import http from 'http';
+import { Server } from 'socket.io';
+import express from 'express';
+import mongoose from 'mongoose';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import passport from 'passport';
+import authRoutes from './routes/auth.routes';
+import bookingRoutes from './routes/booking.routes';
+import userRoutes from './routes/user.routes';
+import settingsRoutes from './routes/settings.routes';
+import smsRoutes from './routes/sms.routes';
+import paymentRoutes from './routes/payment.routes';
 import profileRoutes from './routes/profile.routes';
-
 import reportsRoutes from './routes/reports.routes';
-
-// ... (other imports)
-
-app.use('/api/reports', reportsRoutes);
-
-// ... (rest of the file)
+import availabilityRoutes from './routes/availability.routes';
+import crmRoutes from './routes/crm.routes';
+import loyaltyRoutes from './routes/loyalty.routes';
+import reviewsRoutes from './routes/reviews.routes';
+import { loadPlugins } from './plugins/loader';
+import './models/settings.model'; // Import to initialize settings
+import './config/passport';
 
 dotenv.config();
 
@@ -39,6 +52,12 @@ app.use('/api/users', userRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/sms', smsRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/profile', profileRoutes);
+app.use('/api/reports', reportsRoutes);
+app.use('/api/availability', availabilityRoutes);
+app.use('/api/crm', crmRoutes);
+app.use('/api/loyalty', loyaltyRoutes);
+app.use('/api/reviews', reviewsRoutes);
 
 loadPlugins(app);
 

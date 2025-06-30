@@ -1,6 +1,8 @@
 
 import { Request, Response } from 'express';
-import Booking from '../models/booking.model';
+import Booking, { IBooking } from '../models/booking.model';
+import notificationsPlugin from '../plugins/notifications';
+import availabilityService from '../plugins/common/availability.service';
 
 export const getBookings = async (req: Request, res: Response) => {
   try {
@@ -13,13 +15,22 @@ export const getBookings = async (req: Request, res: Response) => {
 
 export const createBooking = async (req: any, res: Response) => {
   try {
-    const { date, startTime, endTime, fee } = req.body;
+    const { date, startTime, endTime, fee, employeeId } = req.body;
+
+    if (employeeId) {
+      const isAvailable = await availabilityService.isEmployeeAvailable(employeeId, { date, startTime, endTime } as IBooking);
+      if (!isAvailable) {
+        return res.status(400).json({ message: 'Employee is not available at this time' });
+      }
+    }
+
     const newBooking = new Booking({
       user: req.user._id,
       date,
       startTime,
       endTime,
       fee,
+      employee: employeeId,
     });
     await newBooking.save();
     res.status(201).json(newBooking);
@@ -39,10 +50,6 @@ export const getBooking = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Something went wrong' });
   }
 };
-
-import { Request, Response } from 'express';
-import Booking from '../models/booking.model';
-import notificationsPlugin from '../plugins/notifications';
 
 export const updateBookingStatus = async (req: Request, res: Response) => {
   try {
@@ -82,8 +89,6 @@ export const getBookingsWithLocation = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Something went wrong' });
   }
 };
-
-// ... (rest of the controller)
 
 export const getMyBookings = async (req: any, res: Response) => {
   try {

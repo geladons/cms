@@ -27,10 +27,16 @@ export const createPaymentIntent = async (req: Request, res: Response) => {
 
 // It's better to use webhooks for reliable payment confirmation,
 // but for simplicity, we'll create a dedicated endpoint.
+import { loyaltyService } from '../plugins/loyalty';
+
+// ... (inside confirmPayment)
 export const confirmPayment = async (req: Request, res: Response) => {
   const { bookingId } = req.body;
   try {
-    await Booking.findByIdAndUpdate(bookingId, { paid: true, status: 'confirmed' });
+    const booking = await Booking.findByIdAndUpdate(bookingId, { paid: true, status: 'confirmed' });
+    if (booking) {
+      await loyaltyService.awardPoints(booking);
+    }
     res.status(200).json({ message: 'Payment confirmed' });
   } catch (error) {
     res.status(500).json({ message: 'Something went wrong' });

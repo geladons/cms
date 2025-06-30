@@ -13,6 +13,19 @@ const userSchema = new Schema({
     },
     address: String,
   },
+  availability: [{
+    day: { type: String, enum: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] },
+    slots: [{
+      startTime: String,
+      endTime: String,
+    }],
+  }],
+  notes: [{
+    content: String,
+    createdAt: { type: Date, default: Date.now },
+    admin: { type: Schema.Types.ObjectId, ref: 'User' },
+  }],
+  loyaltyPoints: { type: Number, default: 0 },
 }, {
   timestamps: true,
 });
