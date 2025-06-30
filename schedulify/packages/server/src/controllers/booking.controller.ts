@@ -40,6 +40,10 @@ export const getBooking = async (req: Request, res: Response) => {
   }
 };
 
+import { Request, Response } from 'express';
+import Booking from '../models/booking.model';
+import notificationsPlugin from '../plugins/notifications';
+
 export const updateBookingStatus = async (req: Request, res: Response) => {
   try {
     const { status } = req.body;
@@ -47,15 +51,25 @@ export const updateBookingStatus = async (req: Request, res: Response) => {
       req.params.id,
       { status },
       { new: true }
-    );
+    ).populate('user');
+
     if (!booking) {
       return res.status(404).json({ message: 'Booking not found' });
     }
+
+    if (status === 'confirmed') {
+      notificationsPlugin.notificationService.sendBookingConfirmation(booking);
+    } else if (status === 'cancelled') {
+      notificationsPlugin.notificationService.sendBookingCancellation(booking);
+    }
+
     res.status(200).json(booking);
   } catch (error) {
     res.status(500).json({ message: 'Something went wrong' });
   }
 };
+
+// ... (rest of the controller)
 
 export const getMyBookings = async (req: any, res: Response) => {
   try {
