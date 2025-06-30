@@ -109,6 +109,18 @@ const UserList = () => {
                   <TableCell>{user.email}</TableCell>
                   <TableCell>{user.role}</TableCell>
                   <TableCell>
+                    import { Link } from 'react-router-dom';
+
+// ... (inside the TableCell with actions)
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      sx={{ mr: 1 }}
+                      component={Link}
+                      to={`/admin/users/${user._id}`}
+                    >
+                      View
+                    </Button>
                     <Button
                       variant="contained"
                       color="primary"

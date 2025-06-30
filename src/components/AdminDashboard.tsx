@@ -18,6 +18,10 @@ import AuthSettings from './admin/AuthSettings';
 import ThemeSettings from './admin/ThemeSettings';
 import NotificationSettings from './admin/NotificationSettings';
 import Reports from './admin/Reports';
+import TimeOffRequests from './admin/TimeOffRequests';
+import ClientDetails from './admin/ClientDetails';
+import LoyaltySettings from './admin/LoyaltySettings';
+import ReviewManagement from './admin/ReviewManagement';
 
 const drawerWidth = 240;
 
@@ -67,6 +71,15 @@ const AdminDashboard = () => {
           <ListItem button component={Link} to="/admin/reports">
             <ListItemText primary="Reports" />
           </ListItem>
+          <ListItem button component={Link} to="/admin/time-off">
+            <ListItemText primary="Time Off Requests" />
+          </ListItem>
+          <ListItem button component={Link} to="/admin/settings/loyalty">
+            <ListItemText primary="Loyalty Settings" />
+          </ListItem>
+          <ListItem button component={Link} to="/admin/reviews">
+            <ListItemText primary="Reviews" />
+          </ListItem>
         </List>
       </Drawer>
       <Box
@@ -81,6 +94,10 @@ const AdminDashboard = () => {
           <Route path="settings/theme" element={<ThemeSettings />} />
           <Route path="settings/notifications" element={<NotificationSettings />} />
           <Route path="reports" element={<Reports />} />
+          <Route path="time-off" element={<TimeOffRequests />} />
+          <Route path="users/:id" element={<ClientDetails />} />
+          <Route path="settings/loyalty" element={<LoyaltySettings />} />
+          <Route path="reviews" element={<ReviewManagement />} />
         </Routes>
       </Box>
     </Box>

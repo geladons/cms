@@ -1,57 +1,28 @@
 
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import {
-  Container,
-  Typography,
-  Box,
-  List,
-  ListItem,
-  ListItemText,
-} from '@mui/material';
+import React, { useState } from 'react';
+import { Container, Box, Tabs, Tab } from '@mui/material';
+import AssignedBookings from './employee/AssignedBookings'; // We'll create this next
+import Availability from './employee/Availability';
+import TimeOff from './employee/TimeOff';
 
 const EmployeeDashboard = () => {
-  const [bookings, setBookings] = useState([]);
+  const [tab, setTab] = useState(0);
 
-  useEffect(() => {
-    const fetchBookings = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        // This endpoint doesn't exist yet, we'll create it next
-        const res = await axios.get('http://localhost:5000/api/bookings/my-assigned-bookings', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setBookings(res.data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchBookings();
-  }, []);
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setTab(newValue);
+  };
 
   return (
-    <Container maxWidth="md">
-      <Box
-        sx={{
-          marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-        <Typography component="h1" variant="h5">
-          My Assigned Bookings
-        </Typography>
-        <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
-          {bookings.map((booking: any) => (
-            <ListItem key={booking._id}>
-              <ListItemText
-                primary={`Date: ${new Date(booking.date).toLocaleDateString()}`}
-                secondary={`Time: ${booking.startTime} - ${booking.endTime} | Status: ${booking.status}`}
-              />
-            </ListItem>
-          ))}
-        </List>
+    <Container maxWidth="lg">
+      <Box sx={{ marginTop: 8 }}>
+        <Tabs value={tab} onChange={handleTabChange} centered>
+          <Tab label="My Assigned Bookings" />
+          <Tab label="My Availability" />
+          <Tab label="Time Off" />
+        </Tabs>
+        {tab === 0 && <AssignedBookings />}
+        {tab === 1 && <Availability />}
+        {tab === 2 && <TimeOff />}
       </Box>
     </Container>
   );

@@ -10,53 +10,30 @@ import {
   ListItemText,
   Tabs,
   Tab,
+  Button,
 } from '@mui/material';
 import Profile from './Profile';
+import Loyalty from './client/Loyalty';
 
+import LeaveReview from './reviews/LeaveReview';
+
+// ...
 const ClientDashboard = () => {
   const [bookings, setBookings] = useState([]);
   const [tab, setTab] = useState(0);
+  const [reviewModalOpen, setReviewModalOpen] = useState(false);
+  const [selectedBookingId, setSelectedBookingId] = useState('');
 
-  useEffect(() => {
-    const fetchBookings = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const res = await axios.get('http://localhost:5000/api/bookings/my-bookings', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setBookings(res.data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    if (tab === 0) {
-      fetchBookings();
-    }
-  }, [tab]);
-
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setTab(newValue);
+  const handleOpenReviewModal = (bookingId: string) => {
+    setSelectedBookingId(bookingId);
+    setReviewModalOpen(true);
   };
 
-  return (
-    <Container maxWidth="md">
-      <Box sx={{ marginTop: 8 }}>
-        <Tabs value={tab} onChange={handleTabChange} centered>
-          <Tab label="My Bookings" />
-          <Tab label="My Profile" />
-        </Tabs>
-        {tab === 0 && (
-          <Box>
-            <Typography component="h1" variant="h5" sx={{ mt: 4, mb: 2, textAlign: 'center' }}>
-              My Bookings
-            </Typography>
-            <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
-              {bookings.map((booking: any) => (
-                <ListItem key={booking._id}>
-                  <ListItemText
-                    primary={`Date: ${new Date(booking.date).toLocaleDateString()}`}
-                    secondary={`Time: ${booking.startTime} - ${booking.endTime} | Status: ${booking.status}`}
-                  />
+  const handleCloseReviewModal = () => {
+    setSelectedBookingId('');
+    setReviewModalOpen(false);
+  };
+// ...
                   {booking.paid && (
                     <Button
                       variant="contained"
@@ -65,13 +42,24 @@ const ClientDashboard = () => {
                       Download Invoice
                     </Button>
                   )}
+                  {booking.status === 'completed' && (
+                    <Button
+                      variant="outlined"
+                      onClick={() => handleOpenReviewModal(booking._id)}
+                      sx={{ ml: 1 }}
+                    >
+                      Leave Review
+                    </Button>
+                  )}
                 </ListItem>
-              ))}
-            </List>
-          </Box>
-        )}
-        {tab === 1 && <Profile />}
+// ...
+        {tab === 2 && <Loyalty />}
       </Box>
+      <LeaveReview
+        open={reviewModalOpen}
+        handleClose={handleCloseReviewModal}
+        bookingId={selectedBookingId}
+      />
     </Container>
   );
 };

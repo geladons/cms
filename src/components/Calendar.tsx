@@ -34,16 +34,9 @@ const style = {
 };
 
 const Calendar = () => {
-  const [events, setEvents] = useState([]);
-  const [open, setOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState('');
-  const [formData, setFormData] = useState({
-    startTime: '',
-    endTime: '',
-    fee: 50,
-  });
-  const [clientSecret, setClientSecret] = useState('');
-  const [bookingId, setBookingId] = useState('');
+  const [loyaltyPoints, setLoyaltyPoints] = useState(0);
+  const [pointsToRedeem, setPointsToRedeem] = useState(0);
+  const [discount, setDiscount] = useState(0);
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -62,6 +55,19 @@ const Calendar = () => {
       }
     };
     fetchBookings();
+
+    const fetchLoyaltyPoints = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await axios.get('http://localhost:5000/api/loyalty', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setLoyaltyPoints(res.data.points);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchLoyaltyPoints();
 
     socket.on('bookingUpdate', (updatedBooking) => {
       setEvents((prevEvents) =>
@@ -82,80 +88,22 @@ const Calendar = () => {
     };
   }, []);
 
-  const handleDateClick = (arg: any) => {
-    setSelectedDate(arg.dateStr);
-    setOpen(true);
-  };
+// ...
 
-  const handleClose = () => {
-    setOpen(false);
-    setClientSecret('');
-    setBookingId('');
-  };
-
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-
-  const handleBooking = async () => {
+  const handleRedeemPoints = async () => {
     try {
-      // 1. Create booking with pending status
-      const bookingRes = await axios.post('http://localhost:5000/api/bookings', {
-        ...formData,
-        date: selectedDate,
-        user: 'mock-user-id', // Replace with actual user ID
+      const token = localStorage.getItem('token');
+      const res = await axios.post('http://localhost:5000/api/loyalty/redeem', { points: pointsToRedeem }, {
+        headers: { Authorization: `Bearer ${token}` },
       });
-      setBookingId(bookingRes.data._id);
-
-      // 2. Create payment intent
-      const paymentRes = await axios.post(
-        'http://localhost:5000/api/payments/create-payment-intent',
-        { 
-          amount: formData.fee * 100, // Amount in cents
-          bookingId: bookingRes.data._id 
-        }
-      );
-      setClientSecret(paymentRes.data.clientSecret);
+      setDiscount(res.data.discount);
     } catch (err) {
       console.error(err);
     }
   };
 
-  const onSuccessfulCheckout = async () => {
-    try {
-      // 3. Update booking status to confirmed
-      await axios.post(`http://localhost:5000/api/payments/confirm-payment`, {
-        bookingId,
-      });
-      socket.emit('bookingUpdate', { _id: bookingId, status: 'confirmed' });
-      handleClose();
-    } catch (err) {
-      console.error(err);
-    }
-  };
+// ...
 
-  return (
-    <Container maxWidth="lg" sx={{ mt: 4 }}>
-      <FullCalendar
-        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-        initialView="dayGridMonth"
-        headerToolbar={{
-          left: 'prev,next today',
-          center: 'title',
-          right: 'dayGridMonth,timeGridWeek,timeGridDay',
-        }}
-        events={events}
-        dateClick={handleDateClick}
-      />
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Book a Session on {selectedDate}
-          </Typography>
           {!clientSecret ? (
             <>
               <TextField
@@ -180,6 +128,18 @@ const Calendar = () => {
                 InputLabelProps={{ shrink: true }}
                 onChange={onChange}
               />
+              <Typography>You have {loyaltyPoints} points.</Typography>
+              <TextField
+                label="Points to Redeem"
+                type="number"
+                value={pointsToRedeem}
+                onChange={(e) => setPointsToRedeem(parseInt(e.target.value, 10))}
+                fullWidth
+                margin="normal"
+              />
+              <Button onClick={handleRedeemPoints}>Redeem</Button>
+              <Typography>Discount: ${discount.toFixed(2)}</Typography>
+              <Typography>Final Price: ${(formData.fee - discount).toFixed(2)}</Typography>
               <Button
                 onClick={handleBooking}
                 variant="contained"
