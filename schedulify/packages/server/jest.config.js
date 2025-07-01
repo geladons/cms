@@ -1,6 +1,7 @@
-
 module.exports = {
-  preset: 'ts-jest',
   testEnvironment: 'node',
-  setupFilesAfterEnv: ['./src/test/setup.ts'],
+  testTimeout: 30000,
+  globalSetup: './test/global-setup.js',
+  globalTeardown: './test/global-teardown.js',
+  setupFiles: ['dotenv/config'],
 };

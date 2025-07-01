@@ -1,7 +1,7 @@
 
 import { Request, Response } from 'express';
-import User from '../../models/user.model';
-import { geocodingService } from '../../plugins/mapping';
+import User from '../models/user.model';
+import { geocodingService } from '../plugins/mapping';
 
 export const updateProfile = async (req: any, res: Response) => {
   try {

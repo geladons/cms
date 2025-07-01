@@ -1,7 +1,7 @@
 
 import { Request, Response } from 'express';
-import Booking from '../../models/booking.model';
-import { invoiceService } from '../../plugins/invoicing';
+import Booking from '../models/booking.model';
+import { invoiceService } from '../plugins/invoicing';
 
 export const downloadInvoice = async (req: Request, res: Response) => {
   try {

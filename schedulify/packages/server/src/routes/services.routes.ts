@@ -5,7 +5,8 @@ import {
   getServices, 
   updateService, 
   deleteService,
-  getActiveServices
+  getActiveServices,
+  getAvailableEmployees
 } from '../controllers/services.controller';
 import { auth, admin } from '../middleware/auth.middleware';
 
@@ -13,6 +14,7 @@ const router = Router();
 
 // Public routes
 router.get('/active', getActiveServices);
+router.get('/availability', getAvailableEmployees);
 
 // Admin routes
 router.post('/', auth, admin, createService);

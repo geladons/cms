@@ -9,9 +9,14 @@ app.use('/api/blog', blogRoutes);
 
 // ... (rest of the file)
 
+import http from 'http';
+import { Server } from 'socket.io';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import app from './app';
+
 dotenv.config();
 
-const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
@@ -19,10 +24,6 @@ const io = new Server(server, {
     methods: ['GET', 'POST'],
   },
 });
-
-app.use(cors());
-app.use(express.json());
-app.use(passport.initialize());
 
 const uri = process.env.MONGO_URI || 'mongodb://localhost:27017/schedulify';
 
@@ -32,23 +33,6 @@ const connection = mongoose.connection;
 connection.once('open', () => {
   console.log('MongoDB database connection established successfully');
 });
-
-app.use('/api/auth', authRoutes);
-app.use('/api/bookings', bookingRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/settings', settingsRoutes);
-app.use('/api/sms', smsRoutes);
-app.use('/api/payments', paymentRoutes);
-app.use('/api/profile', profileRoutes);
-app.use('/api/reports', reportsRoutes);
-app.use('/api/availability', availabilityRoutes);
-app.use('/api/crm', crmRoutes);
-app.use('/api/loyalty', loyaltyRoutes);
-app.use('/api/reviews', reviewsRoutes);
-app.use('/api/services', servicesRoutes);
-app.use('/api/coupons', couponsRoutes);
-
-loadPlugins(app);
 
 io.on('connection', (socket) => {
   console.log('a user connected');

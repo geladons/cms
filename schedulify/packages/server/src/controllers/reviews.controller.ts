@@ -1,7 +1,7 @@
 
 import { Request, Response } from 'express';
-import Review from '../../models/review.model';
-import Booking from '../../models/booking.model';
+import Review from '../models/review.model';
+import Booking from '../models/booking.model';
 
 // --- Client Controller ---
 export const submitReview = async (req: any, res: Response) => {

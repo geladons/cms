@@ -33,8 +33,37 @@ passport.use(
   )
 );
 
-passport.use(
-  new AppleStrategy(
+if (process.env.APPLE_CLIENT_ID) {
+  passport.use(
+    new AppleStrategy(
+      {
+        clientID: process.env.APPLE_CLIENT_ID!,
+        teamID: process.env.APPLE_TEAM_ID!,
+        keyID: process.env.APPLE_KEY_ID!,
+        privateKey: fs.readFileSync(path.join(__dirname, 'AuthKey.p8')),
+        callbackURL: '/api/auth/apple/callback',
+      },
+      async (accessToken, refreshToken, profile, done) => {
+        try {
+          let user = await User.findOne({ appleId: profile.id });
+
+          if (!user) {
+            user = await User.create({
+              appleId: profile.id,
+              // Apple doesn't always provide name and email
+              name: profile.name?.firstName ? `${profile.name.firstName} ${profile.name.lastName}` : 'User',
+              email: profile.email!,
+            });
+          }
+
+          return done(null, user);
+        } catch (error) {
+          return done(error);
+        }
+      }
+    )
+  );
+}
     {
       clientID: process.env.APPLE_CLIENT_ID!,
       teamID: process.env.APPLE_TEAM_ID!,

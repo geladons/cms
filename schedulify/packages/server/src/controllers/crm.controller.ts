@@ -1,7 +1,7 @@
 
 import { Request, Response } from 'express';
-import User from '../../models/user.model';
-import Booking from '../../models/booking.model';
+import User from '../models/user.model';
+import Booking from '../models/booking.model';
 
 export const getUserDetails = async (req: Request, res: Response) => {
   try {

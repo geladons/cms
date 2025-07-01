@@ -1,8 +1,8 @@
 
 import { Request, Response } from 'express';
-import User from '../../models/user.model';
-import LoyaltyTransaction from '../../models/loyalty.model';
-import { loyaltyService } from '../../plugins/loyalty';
+import User from '../models/user.model';
+import LoyaltyTransaction from '../models/loyalty.model';
+import { loyaltyService } from '../plugins/loyalty';
 
 export const getLoyaltyData = async (req: any, res: Response) => {
   try {

@@ -27,6 +27,8 @@ const userSchema = new Schema({
   }],
   loyaltyPoints: { type: Number, default: 0 },
   bio: { type: String, trim: true },
+  title: { type: String, trim: true },
+  profileImage: { type: String },
 }, {
   timestamps: true,
 });

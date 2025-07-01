@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --detectOpenHandles",
     "dev": "ts-node src/index.ts",
     "start": "node dist/index.js",
     "build": "tsc"
@@ -30,6 +30,9 @@
     "twilio": "^5.7.1"
   },
   "devDependencies": {
+    "@babel/core": "^7.27.7",
+    "@babel/preset-env": "^7.27.2",
+    "@babel/preset-typescript": "^7.27.1",
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
@@ -41,6 +44,7 @@
     "@types/passport-google-oauth20": "^2.0.16",
     "@types/pdfkit": "^0.14.0",
     "@types/supertest": "^6.0.3",
+    "babel-jest": "^30.0.2",
     "jest": "^30.0.3",
     "mongodb-memory-server": "^10.1.4",
     "supertest": "^7.1.1",

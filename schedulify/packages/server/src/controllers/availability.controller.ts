@@ -62,17 +62,17 @@ export const updateTimeOffStatus = async (req: Request, res: Response) => {
     if (!timeOff) {
       return res.status(404).json({ message: 'Time off request not found' });
     }
-    export const getMyTimeOffRequests = async (req: any, res: Response) => {
-  try {
-    const timeOffRequests = await TimeOff.find({ employee: req.user._id });
-    res.status(200).json(timeOffRequests);
+    // Here you could add a notification to the employee
+    res.status(200).json(timeOff);
   } catch (error) {
     res.status(500).json({ message: 'Something went wrong' });
   }
 };
 
-// ... (rest of the controller)
-    res.status(200).json(timeOff);
+export const getMyTimeOffRequests = async (req: any, res: Response) => {
+  try {
+    const timeOffRequests = await TimeOff.find({ employee: req.user._id });
+    res.status(200).json(timeOffRequests);
   } catch (error) {
     res.status(500).json({ message: 'Something went wrong' });
   }

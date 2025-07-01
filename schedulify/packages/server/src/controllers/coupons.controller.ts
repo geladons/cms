@@ -1,6 +1,6 @@
 
 import { Request, Response } from 'express';
-import Coupon from '../../models/coupon.model';
+import Coupon from '../models/coupon.model';
 
 // --- Admin Controllers ---
 export const createCoupon = async (req: Request, res: Response) => {

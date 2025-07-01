@@ -1,6 +1,6 @@
 
 import { Request, Response } from 'express';
-import Article from '../../models/article.model';
+import Article from '../models/article.model';
 
 // --- Admin Controllers ---
 export const createArticle = async (req: any, res: Response) => {
