@@ -102,6 +102,24 @@ const Profile = () => {
             value={formData.bio}
             onChange={onChange}
           />
+          <TextField
+            margin="normal"
+            fullWidth
+            id="title"
+            label="Title"
+            name="title"
+            value={formData.title}
+            onChange={onChange}
+          />
+          <TextField
+            margin="normal"
+            fullWidth
+            id="profileImage"
+            label="Profile Image URL"
+            name="profileImage"
+            value={formData.profileImage}
+            onChange={onChange}
+          />
           <Button
             type="submit"
             fullWidth
